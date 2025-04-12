@@ -78,7 +78,5 @@ python3 -m http.server 8080
 - **Metasploit** — [metasploit.com](https://www.metasploit.com)  
   A powerful framework for developing and executing exploit code against remote target machines.
 
-- **Python HTTP Server**  
-  Used to serve the payload during the attack.
 
 ---
