@@ -3,7 +3,7 @@
 A lightweight Windows C application developed using **Visual Studio**. This project demonstrates core Windows API usage, process enumeration, and basic system interaction.
 
 ---
-
+⚠️ **Disclaimer:** This project is for educational purposes only. It is designed to help individuals understand how malware operates so they can better defend against it. Its intended purpose is for Hack the Box or CTF-like events. 
 ## 📦 Features
 
 - Built using **pure C** and Windows **Win32 API**
