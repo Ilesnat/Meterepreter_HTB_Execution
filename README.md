@@ -47,6 +47,10 @@ use multi/handler
 python3 -m http.server 8080
 ``` 
 
+4. Below is a screenshot of what your terminal should look like
+
+![alt text](image.png)
+
 
 ### 🛠️ Build Instructions
 
