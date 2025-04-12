@@ -1,6 +1,6 @@
 # 🎯 Meterpreter Payload exectuion
 
-A lightweight Windows C application developed using **Visual Studio**. This project aims to execute a Meterpreter payload with Defender enabled. This approach helps bypass Defender, although some Meterpreter functionalities may still be flagged. This solution results from work done after following **MALDEV Academy** — a fantastic course that helped me reach this level.
+A lightweight Windows C application developed using **Visual Studio**. This project aims to execute a Meterpreter payload with Defender enabled. The purpose is to use this exe on harder Hack the Box machines. This approach helps bypass Defender, although some Meterpreter functionalities may still be flagged. This solution results from work done after following **MALDEV Academy** — a fantastic course that helped me reach this level.
 
 ---
 ⚠️ **Disclaimer:** This project is for educational purposes only. It is designed to help individuals understand how malware operates so they can better defend against it. Its intended purpose is for Hack the Box or CTF-like events. 
