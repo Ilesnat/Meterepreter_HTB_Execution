@@ -10,13 +10,6 @@ A lightweight Windows C application developed using **Visual Studio**. The purpo
 - Utilize a web stager to host the raw Meterpreter Binary. This fecthes the shell code at runtime and will avoid some common signtures by not storing the shell code on disk.
 - I then create a suspended process "Notepad.exe" and then hijack a thread of that process to execute the shell code
 
-## 📦 Features
-
-- Built using **pure C** and Windows **Win32 API**
-- Visual Studio Project 
-- Clone the repo build, and follow the steps below
-
----
 
 ## 🚀 Getting Started
 
@@ -40,7 +33,7 @@ msfconsole
 use multi/handler
 #set the lhost, lport, and payload to match the command above
  ```
-3. setup the python server
+3. Setup the python server
 
 ``` bash
 # in the same directory as the paylaod and a differnt terminal as Metasploit run the following commands
@@ -55,14 +48,10 @@ python3 -m http.server 8080
 ### 🛠️ Build Instructions
 
 1. Clone the repository:
-    ```bash
-    git clone https://github.com/yourusername/yourproject.git
-    cd yourproject
-    ```
 
 2. Open the `.sln` file in **Visual Studio**
 
-    - Change the IP and Port for you kali machine. Make sure the port used is the one hosting the python server
+    - Change the IP and Port for you kali machine. Make sure the port used is the one hosting the python server.
 
 3. Build the project:
     - Select **Build > Build Solution** (or press `Ctrl+Shift+B`)
@@ -70,13 +59,10 @@ python3 -m http.server 8080
 
 4. Run the executable from Visual Studio
 
----
+5. Below are screenshots of the output
 
-## 🧪 Usage
+- Executing the payload on the target
+![alt text](image-1.png)
 
-Example usage (from `main()`):
-
-```c
-int pid = 0;
-ProcessEnumeration(L"notepad.exe", &dwPID, &hProcess, &pid);
-printf("Found PID: %d\n", pid);
+- A callback then a Meterpreter shell
+![alt text](image-2.png)
