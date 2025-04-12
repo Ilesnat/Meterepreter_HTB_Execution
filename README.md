@@ -8,7 +8,7 @@ A lightweight Windows C application developed using **Visual Studio**. This proj
 ## Approach
 
 - Utilize a web stager to host the raw Meterpreter Binary. This fetches the shell code at runtime and will avoid some common signatures by not storing the shell code on disk.
-- I then create a suspended process, "Notepad.exe" and then hijack a thread of that process to execute the shell code
+- I then create a suspended process, "cmd.exe" and then hijack a thread of that process to execute the shell code
 
 
 ## 🚀 Getting Started
