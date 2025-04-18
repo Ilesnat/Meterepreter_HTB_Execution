@@ -42,7 +42,7 @@ python3 -m http.server 8080
 
 4. Below is a screenshot of what your terminal should look like
 
-![alt text](image.png)
+![alt text](./Images/image.png)
 
 
 ### 🛠️ Build Instructions
@@ -62,10 +62,10 @@ python3 -m http.server 8080
 5. Below are screenshots of the output
 
 - Executing the payload on the target
-![alt text](image-1.png)
+![alt text](./Images/image-1.png)
 
 - A callback,, then a Meterpreter shell
-![alt text](image-2.png)
+![alt text](./Images/image-2.png)
 
 ## 📚 Credits
 
